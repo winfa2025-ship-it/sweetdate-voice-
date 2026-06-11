@@ -306,31 +306,30 @@ select.glass-i{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 </main>
 
 <!-- ============ AD WALL MODAL (REAL ADS + REVENUE) ============ -->
-<div v-if="showAdWall" class="fixed inset-0 z-[999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.94)">
+<div v-if="showAdWall" class="fixed inset-0 z-[999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.96)">
 <div class="glass p-6 w-full max-w-md text-center anim-up">
 <div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center pulse-ring" style="background:rgba(255,64,129,0.15)"><span class="text-xl">📺</span></div>
 <h3 class="text-base font-bold mb-1 text-white">{{adType==='call'?t('ad_watch_call'):t('ad_watch_match')}}</h3>
 <p class="text-gray-400 text-xs mb-3">{{t('ad_watch_desc')}}</p>
 
 <div v-if="!adWatching && !adDone" class="space-y-3">
-<div class="rounded-xl overflow-hidden" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
-<div class="p-4 text-center">
-<div class="font-semibold text-white text-sm mb-1">SweetDate Voice</div>
-<p class="text-xs text-gray-400 mb-3">Watch a short ad to unlock this feature</p>
-<a :href="adsterraDirectLink" target="_blank" @click="trackAdClick" class="inline-block text-sm px-5 py-2 rounded-lg font-bold mb-2" style="background:linear-gradient(135deg,#FF4081,#C60055);color:#fff">Click to View Offer</a>
-<p class="text-xs text-gray-500">or</p>
-<button @click="startAd" class="btn w-full flex items-center justify-center gap-2 text-base py-3 font-bold text-lg mt-2">▶ {{t('watch_ad_now')}}</button>
+<!-- Real Adsterra Native Banner -->
+<div class="rounded-xl overflow-hidden p-3" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
+<div id="container-adwall-banner" style="min-width:300px;min-height:80px" ref="adwallBanner"></div>
 </div>
+<button @click="clickAdThenProceed" class="btn w-full flex items-center justify-center gap-2 text-base py-3 font-bold text-lg">▶ {{t('watch_ad_now')}}</button>
+<p class="text-xs text-gray-600">Click the button above to view the sponsored offer</p>
 </div>
 
 <div v-if="adWatching" class="space-y-3">
-<div class="rounded-xl overflow-hidden" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
-<div class="p-4 flex justify-center">
-<div id="container-c587a89355da29a9efa7364527609233" style="min-width:300px;min-height:50px"></div>
-</div></div>
+<div class="rounded-xl overflow-hidden p-3" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
+<a :href="adsterraDirectLink" target="_blank" @click="trackAdClick" class="block text-center">
+<div class="font-semibold text-white text-sm mb-1">Sponsored Offer</div>
+<p class="text-xs text-gray-400">Tap to visit advertiser →</p>
+</a>
+</div>
 <div class="flex justify-between text-sm"><span class="text-gray-400">⏳ {{t('watching_ad')}}...</span><span style="font-size:20px;font-weight:bold;color:#FF4081">{{adTimeLeft}}s</span></div>
 <div class="h-3 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.08)"><div class="h-full rounded-full transition-all duration-1000 ease-linear" style="background:linear-gradient(90deg,#FF4081,#FFD700)" :style="{width:adProgress+'%'}"></div></div>
-<p class="text-xs text-gray-500">Ad supports free service · Adsterra · Zone 29615814</p>
 </div>
 <div v-if="adDone" class="text-green-400 py-4"><div class="text-5xl mb-2">✅</div><p class="font-semibold text-xl">{{t('ad_completed')}}</p><p class="text-gray-400 text-sm mt-2">{{t('reconnecting')}}...</p></div>
 <button @click="closeAdWall" class="mt-4 text-sm text-gray-600 hover:text-white block w-full text-center py-2">{{t('cancel')}}</button>
@@ -443,14 +442,12 @@ const adsterraDirectLink=ref(window.adsterraDirectLink||'https://www.effectivecp
 let adTimer=null,pendingAdCallback=null,allCustomAds=[]
 onMounted(async()=>{try{const s=await db.collection('admin_ads').get();allCustomAds=[];s.forEach(d=>{const data=d.data();if(data.active)allCustomAds.push({id:d.id,...data})})}catch(e){}})
 function pickRandomAd(){const active=allCustomAds;if(active.length===0)return null;return active[Math.floor(Math.random()*active.length)]}
-function doMatch(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='chats';openChat({id:a.id,name:a.name,avatar:a.avatar,ai:true,online:a.online})};adType.value='match';showAdWall.value=true}
-function doVoiceCall(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='calls';startVoiceCall(a)};adType.value='call';showAdWall.value=true}
+function doMatch(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='chats';openChat({id:a.id,name:a.name,avatar:a.avatar,ai:true,online:a.online})};adType.value='match';showAdWall.value=true;reinvokeBanner()}
+function doVoiceCall(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='calls';startVoiceCall(a)};adType.value='call';showAdWall.value=true;reinvokeBanner()}
 function testAdWall(){currentAd.value=pickRandomAd();adType.value='call';pendingAdCallback=()=>{alert('Ad completed!')};showAdWall.value=true}
 function openStripe(){window.open('https://buy.stripe.com/8x27sL7ul26vaY545F6J201','_blank')}
-function trackAdClick(){if(currentAd.value){try{db.collection('admin_ads').doc(currentAd.value.id).update({clicks:firebase.firestore.FieldValue.increment(1)})}catch(e){}}}
-window.testAdWall=testAdWall
-window.showAd=()=>{showAdWall.value=true;adType.value='call';adWatching.value=false;adDone.value=false}
-function startAd(){if(adTimer)clearInterval(adTimer);adWatching.value=true;adDone.value=false;adProgress.value=0;adTimeLeft.value=10
+function reinvokeBanner(){setTimeout(()=>{const el=document.getElementById('container-adwall-banner');if(el){el.innerHTML='';const s=document.createElement('script');s.async=true;s.setAttribute('data-cfasync','false');s.src='https://pl29716315.effectivecpmnetwork.com/c587a89355da29a9efa7364527609233/invoke.js';el.appendChild(s)}},100)}
+function clickAdThenProceed(){trackAdClick();window.open(adsterraDirectLink.value,'_blank');if(adTimer)clearInterval(adTimer);adWatching.value=true;adDone.value=false;adProgress.value=0;adTimeLeft.value=10
 if(currentAd.value)try{db.collection('admin_ads').doc(currentAd.value.id).update({impressions:firebase.firestore.FieldValue.increment(1)})}catch(e){}
 adTimer=setInterval(()=>{adProgress.value+=10;adTimeLeft.value--;if(adProgress.value>=100){clearInterval(adTimer);adDone.value=true;setTimeout(()=>{showAdWall.value=false;adWatching.value=false;adDone.value=false;currentAd.value=null;if(pendingAdCallback){const cb=pendingAdCallback;pendingAdCallback=null;cb()}},500)}},1000)}
 function closeAdWall(){if(adTimer)clearInterval(adTimer);showAdWall.value=false;adWatching.value=false;adDone.value=false;pendingAdCallback=null}
@@ -566,7 +563,7 @@ const premiumFeatures=[{icon:'🛡️',title:'Ad-Free Experience',desc:'Enjoy Sw
 return{user,authLoading,authError,isRegister,loginEmail,loginPass,regName,regEmail,regPass,doLogin,doRegister,logout,
 section,navItems,bottomNavItems,moreNavItems,allDrawerItems,showMoreMenu,showNavDrawer,profile,profileEditing,saveProfile,loadProfile,countries,languages,appLang,setLang,showLangPicker,langNames,t,userRegion,showRegionPicker,allRegions,setRegion,getRegionName,
 allAgents,agentPage,agentCountries,searchTerm,agentFilter,countryFilter,filteredAgents,
-showAdWall,adType,adWatching,adDone,adProgress,adTimeLeft,startAd,doMatch,doVoiceCall,closeAdWall,testAdWall,currentAd,trackAdClick,adsterraDirectLink,openStripe,
+showAdWall,adType,adWatching,adDone,adProgress,adTimeLeft,clickAdThenProceed,doMatch,doVoiceCall,closeAdWall,testAdWall,currentAd,trackAdClick,adsterraDirectLink,openStripe,
 activeChat,chatInput,chatMessages,chatContacts,openChat,sendMsg,
 inCall,callDuration,callMuted,callSpeaker,callConnecting,callRinging,callConnected,aiSpeaking,toggleMute,toggleSpeaker,startVoiceCall,endCall,callContacts,
 showDatingForm,showDatingTopic,datingTopicTitle,datingTopicContent,datingProfiles,datingTopics,
