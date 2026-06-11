@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SweetDate Voice - Global Dating & Voice Chat</title>
+<meta name="description" content="Free ad-supported global dating app with 1,000+ AI agents and real-time voice calls.">
+<!-- Adsterra Popunder #1 -->
+<script src="https://pl29716312.effectivecpmnetwork.com/49/32/c3/4932c374dc21a25dc38240eb340ec466.js"></script>
+<!-- Adsterra Popunder #2 -->
+<script src="https://pl29716314.effectivecpmnetwork.com/5b/2d/c0/5b2dc0ea93d55ef2534a3d547f6433ea.js"></script>
+<!-- Adsterra Native Banner -->
+<script async data-cfasync="false" src="https://pl29716315.effectivecpmnetwork.com/c587a89355da29a9efa7364527609233/invoke.js"></script>
+<!-- Adsterra Direct Link (used in AdWall) -->
+<script>window.adsterraDirectLink='https://www.effectivecpmnetwork.com/r3vd53hi?key=9d612f8719751c55df74c5f54b317e61';</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#FF4081',surface:'#1A1A2E',card:'#252540',gold:'#FFD700',teal:'#00E5FF'}}}}</script>
+<style>
+*{scrollbar-width:none}*::-webkit-scrollbar{display:none}
+body{font-family:'Inter',system-ui,sans-serif;background:#0f0f1a;color:#fff;margin:0}
+.glass{background:rgba(37,37,64,0.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:16px}
+.glass-i{background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px 16px;color:#fff;outline:none;width:100%;box-sizing:border-box}
+.glass-i:focus{border-color:rgba(255,64,129,0.4);box-shadow:0 0 0 3px rgba(255,64,129,0.1)}
+.btn{background:linear-gradient(135deg,#FF4081,#C60055);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn:hover{box-shadow:0 4px 20px rgba(255,64,129,0.4);transform:translateY(-1px)}.btn:active{transform:scale(.96)}
+.btn-o{border:1px solid rgba(255,255,255,0.2);background:transparent;color:#ccc;border-radius:12px;padding:12px 24px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-o:hover{border-color:rgba(255,64,129,0.5);background:rgba(255,64,129,0.05);color:#fff}
+.btn-gold{background:linear-gradient(135deg,#FFD700,#F5A623);color:#1a1a2e;border:none;border-radius:12px;padding:12px 24px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-gold:hover{box-shadow:0 4px 20px rgba(255,215,0,0.4);transform:translateY(-1px)}
+.btn-call{background:linear-gradient(135deg,#00E5FF,#0088cc);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-weight:600;cursor:pointer;transition:all .2s}.btn-call:hover{box-shadow:0 4px 20px rgba(0,229,255,0.4)}
+.badge-ai{background:rgba(187,134,252,0.15);color:#BB86FC;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.nav-item{padding:8px 14px;border-radius:10px;color:#888;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;white-space:nowrap}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05)}.nav-item.active{color:#fff;background:rgba(255,64,129,0.15);border:1px solid rgba(255,64,129,0.3)}
+.card-h{transition:all .3s;cursor:pointer}.card-h:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,64,129,0.1)}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(0,230,118,0.3)}50%{box-shadow:0 0 40px rgba(0,230,118,0.7)}}
+@keyframes speakWave{0%,100%{transform:scaleY(0.3)}50%{transform:scaleY(1)}}
+.anim-in{animation:fadeIn .4s ease}.anim-up{animation:slideUp .4s ease}.pulse-ring{animation:pulse 2s infinite}
+.grid-agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+@media(max-width:640px){.grid-agents{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}}
+.msg-me{background:linear-gradient(135deg,#FF4081,#C60055);color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;max-width:75%;font-size:14px}
+.msg-other{background:rgba(45,45,68,0.8);border-radius:16px 16px 16px 4px;padding:10px 14px;max-width:75%;font-size:14px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.dot-on{background:#00E676;box-shadow:0 0 8px rgba(0,230,118,0.5)}.dot-off{background:#666}
+select.glass-i{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.wave-bar{width:3px;background:#00E676;border-radius:2px;animation:speakWave 0.6s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ==================== AUTH SCREEN ==================== -->
+<div v-if="!user" class="min-h-screen flex items-center justify-center p-4" style="background:linear-gradient(135deg,#0f0f1a,#1a1a2e,#16213e)">
+<div class="w-full max-w-md anim-in">
+<div class="text-center mb-8">
+<div class="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center pulse-ring" style="background:linear-gradient(135deg,#FF4081,#FFD700)"><svg width="36" height="36" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+<h1 class="text-3xl font-bold mb-1" style="background:linear-gradient(135deg,#FF79B0,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SweetDate Voice</h1>
+<p class="text-gray-400 text-sm">{{t('tagline')}}</p>
+<div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)"><span>🌐</span>
+<select v-model="appLang" @change="setLang(appLang)" class="bg-transparent text-gray-400 text-xs border-none outline-none cursor-pointer">
+<option value="en">English</option><option value="zh">中文(简体)</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="it">Italiano</option><option value="ru">Русский</option><option value="hi">हिन्दी</option><option value="ar">العربية</option><option value="th">ภาษาไทย</option><option value="vi">Tiếng Việt</option>
+</select></div>
+<div class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)"><span>📍</span>
+<select v-model="userRegion" class="bg-transparent text-gray-400 text-xs border-none outline-none cursor-pointer">
+<option value="Global">🌍 Global</option>
+<option value="US">🇺🇸 United States</option><option value="GB">🇬🇧 United Kingdom</option><option value="CN">🇨🇳 China</option><option value="JP">🇯🇵 Japan</option><option value="KR">🇰🇷 South Korea</option><option value="FR">🇫🇷 France</option><option value="DE">🇩🇪 Germany</option><option value="ES">🇪🇸 Spain</option><option value="IT">🇮🇹 Italy</option><option value="BR">🇧🇷 Brazil</option><option value="IN">🇮🇳 India</option><option value="RU">🇷🇺 Russia</option><option value="TH">🇹🇭 Thailand</option><option value="VN">🇻🇳 Vietnam</option><option value="PH">🇵🇭 Philippines</option><option value="ID">🇮🇩 Indonesia</option><option value="MX">🇲🇽 Mexico</option><option value="AR">🇦🇷 Argentina</option><option value="TR">🇹🇷 Turkey</option><option value="EG">🇪🇬 Egypt</option><option value="NG">🇳🇬 Nigeria</option><option value="ZA">🇿🇦 South Africa</option><option value="AU">🇦🇺 Australia</option><option value="CA">🇨🇦 Canada</option>
+</select></div></div>
+<div class="glass p-8">
+<div v-if="authError" class="mb-4 p-3 rounded-lg text-sm" style="background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);color:#f87171">{{authError}}</div>
+<template v-if="!isRegister">
+<div class="mb-4"><label class="block text-gray-400 text-xs mb-1.5">{{t('email')}}</label><input v-model="loginEmail" type="email" class="glass-i" placeholder="you@email.com"></div>
+<div class="mb-4"><label class="block text-gray-400 text-xs mb-1.5">{{t('password')}}</label><input v-model="loginPass" type="password" class="glass-i" :placeholder="t('password')"></div>
+<button @click="doLogin" :disabled="authLoading" class="btn w-full flex justify-center items-center gap-2 py-3"><span v-if="authLoading" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>{{authLoading?t('signing_in'):t('sign_in')}}</button>
+<p class="text-center mt-4 text-sm text-gray-500">{{t('no_account')}} <button @click="isRegister=true;authError=''" class="text-brand hover:underline font-medium">{{t('sign_up')}}</button></p>
+</template>
+<template v-else>
+<div class="mb-4"><label class="block text-gray-400 text-xs mb-1.5">{{t('full_name')}}</label><input v-model="regName" type="text" class="glass-i" :placeholder="t('full_name')"></div>
+<div class="mb-4"><label class="block text-gray-400 text-xs mb-1.5">{{t('email')}}</label><input v-model="regEmail" type="email" class="glass-i" placeholder="you@email.com"></div>
+<div class="mb-4"><label class="block text-gray-400 text-xs mb-1.5">{{t('password')}}</label><input v-model="regPass" type="password" class="glass-i" :placeholder="t('min_password')"></div>
+<button @click="doRegister" :disabled="authLoading" class="btn w-full flex justify-center items-center gap-2 py-3"><span v-if="authLoading" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>{{authLoading?t('creating'):t('create_account')}}</button>
+<p class="text-center mt-4 text-sm text-gray-500">{{t('has_account')}} <button @click="isRegister=false;authError=''" class="text-brand hover:underline font-medium">{{t('sign_in')}}</button></p>
+</template>
+<div class="mt-6 pt-4 text-center text-xs text-gray-600" style="border-top:1px solid rgba(255,255,255,0.06)">Ad-supported · Adsterra · Zone 29615814</div>
+</div></div></div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div v-else class="min-h-screen" style="background:linear-gradient(180deg,#0f0f1a,#1a1a2e)">
+
+<!-- TOP NAV -->
+<nav class="glass fixed top-0 left-0 right-0 z-40" style="border-radius:0;border-bottom:1px solid rgba(255,255,255,0.05)">
+<div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#FF4081,#FFD700)"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+<span class="font-bold text-lg hidden sm:inline" style="background:linear-gradient(135deg,#FF79B0,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SweetDate</span>
+<div class="hidden sm:flex items-center gap-1.5">
+<button @click="showLangPicker=true" class="text-xs text-gray-400 hover:text-white px-2 py-1 rounded-lg flex items-center gap-1 transition" style="background:rgba(255,255,255,0.03)">🌐 {{appLang.toUpperCase()}}</button>
+<button @click="showRegionPicker=true" class="text-xs text-gray-400 hover:text-white px-2 py-1 rounded-lg flex items-center gap-1 transition" style="background:rgba(255,255,255,0.03)">📍 {{userRegion||'Global'}}</button>
+</div>
+</div>
+<div class="hidden lg:flex items-center gap-1 overflow-x-auto">
+<div v-for="n in navItems" :key="n.id" @click="section=n.id" class="nav-item" :class="{active:section===n.id}"><span v-html="n.icon"></span><span>{{t(n.tKey)}}</span></div>
+<div class="mx-1" style="width:1px;height:20px;background:rgba(255,255,255,0.1)"></div>
+<div @click="section='premium'" class="nav-item" :class="{active:section==='premium'}" style="color:#FFD700;border:1px solid rgba(255,215,0,0.2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2"><path d="M2 4l3 12h14l3-12-4 7-4-7-4 7-4-7z"/></svg><span>{{t('premium')}}</span></div>
+</div>
+<div class="flex items-center gap-3">
+<button @click="logout" class="text-xs text-gray-600 hover:text-red-400 px-2 py-1">{{t('logout')}}</button>
+<div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#FF4081,#BB86FC)">{{user.email.charAt(0).toUpperCase()}}</div>
+</div></div></nav>
+
+<main class="pt-16 pb-24 lg:pb-8 px-4 max-w-7xl mx-auto">
+
+<!-- ============ HOME PAGE ============ -->
+<div v-if="section==='home'" class="anim-in space-y-5">
+<div class="glass p-6 md:p-8 relative overflow-hidden">
+<div style="position:absolute;top:0;right:0;width:250px;height:250px;border-radius:50%;background:rgba(255,64,129,0.08);filter:blur(80px)"></div>
+<div style="position:relative;z-index:1">
+<div class="flex flex-wrap gap-2 mb-3"><span class="badge-ai inline-flex items-center gap-1"><span class="dot dot-on" style="width:6px;height:6px"></span>1,000+ AI Agents</span><span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full" style="background:rgba(0,230,118,0.15);color:#00E676"><span class="dot dot-on" style="width:6px;height:6px"></span>{{t('global_community')}}</span></div>
+<h1 class="text-2xl md:text-3xl font-bold mb-2" style="background:linear-gradient(135deg,#FF79B0,#BB86FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{t('discover_match')}}</h1>
+<p class="text-gray-400 text-sm max-w-lg">{{t('home_desc')}}</p>
+</div></div>
+
+<div class="glass p-3 flex items-center justify-between" style="border:1px solid rgba(255,215,0,0.15)">
+<div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(255,215,0,0.1)">⭐</div><div><p class="text-xs font-medium">{{t('ad_supported')}}</p><p class="text-xs text-gray-500">Adsterra · Zone 29615814</p></div></div>
+<button @click="testAdWall" class="btn text-xs px-4 py-2 font-bold">🧪 Test Ad Wall</button>
+</div>
+
+<div class="flex flex-col sm:flex-row gap-2">
+<div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span><input v-model="searchTerm" class="glass-i pl-9" :placeholder="t('search_placeholder')"></div>
+<select v-model="agentFilter" class="glass-i max-sm:w-full" style="width:150px"><option value="all">{{t('all_agents')}}</option><option value="online">{{t('online_now')}}</option><option value="female">{{t('female')}}</option><option value="male">{{t('male')}}</option></select>
+<select v-model="countryFilter" class="glass-i max-sm:w-full" style="width:160px"><option value="all">{{t('all_countries')}}</option><option v-for="c in agentCountries" :value="c">{{c}}</option></select>
+</div>
+
+<!-- Adsterra Native Banner -->
+<div class="my-3 flex justify-center">
+<div id="container-c587a89355da29a9efa7364527609233" style="min-width:320px;min-height:50px"></div>
+</div>
+
+<div class="grid-agents">
+<div v-for="a in filteredAgents" :key="a.id" class="glass card-h p-3">
+<div class="relative mb-2" style="aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:#2D2D44"><img :src="a.avatar" :alt="a.name" class="w-full h-full object-cover" loading="lazy" @error="e=>e.target.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/><text x=%2235%22 y=%2260%22 fill=%22%23666%22 font-size=%2230%22>♥</text></svg>'">
+<div class="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs" style="background:rgba(0,0,0,0.6)"><span class="dot" :class="a.online?'dot-on':'dot-off'"></span><span style="font-size:10px;color:#fff">{{a.online?t('online'):t('offline')}}</span></div>
+<div class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-full text-xs" style="background:rgba(0,0,0,0.6);color:#fff;font-size:10px">{{a.age}}</div>
+</div>
+<div class="flex justify-between items-center mb-1"><span class="font-semibold text-sm truncate">{{a.name}}</span><span class="text-xs text-gray-500">{{a.country}}</span></div>
+<div class="flex items-center gap-1 text-xs text-gray-400 mb-1"><span>🌐</span>{{a.language}}<span class="mx-1">·</span>{{a.personality}}</div>
+<div class="flex gap-1.5">
+<button @click="doMatch(a)" class="flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 btn" style="padding:6px 0;font-size:11px">💬 {{t('match_btn')}}</button>
+<button @click="doVoiceCall(a)" class="flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1 btn-call" style="padding:6px 0;font-size:11px">📞 {{t('call_btn')}}</button>
+</div></div></div>
+
+<div class="text-center" v-if="agentPage<19"><button @click="agentPage++" class="btn-o">{{t('load_more')}} ({{1000-(agentPage+1)*50}})</button></div>
+<div class="glass p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+<div><div class="text-xl font-bold" style="color:#BB86FC">1,000+</div><div class="text-xs text-gray-500">{{t('ai_agents_count')}}</div></div>
+<div><div class="text-xl font-bold" style="color:#00E676">50,000+</div><div class="text-xs text-gray-500">{{t('global_users')}}</div></div>
+<div><div class="text-xl font-bold" style="color:#00E5FF">25+</div><div class="text-xs text-gray-500">{{t('countries_count')}}</div></div>
+<div><div class="text-xl font-bold" style="color:#FF4081">{{t('free_label')}}</div><div class="text-xs text-gray-500">{{t('ad_supported_label')}}</div></div>
+</div></div>
+
+<!-- ============ DATING ============ -->
+<div v-if="section==='dating'" class="anim-in space-y-5">
+<div class="glass p-5 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(255,64,129,0.15)">❤️</div><div><h2 class="font-bold">{{t('dating_zone')}}</h2><p class="text-xs text-gray-400">{{t('dating_subtitle')}}</p></div></div>
+<div class="flex gap-2"><button @click="showDatingTopic=!showDatingTopic" class="btn-o text-xs px-3 py-2">📝 {{t('start_topic')}}</button><button @click="showDatingForm=!showDatingForm" class="btn text-xs px-3 py-2">+ {{t('create_profile_btn')}}</button></div></div>
+<div v-if="showDatingTopic" class="glass p-5 anim-up space-y-3"><h3 class="font-semibold">{{t('start_dating_topic')}}</h3><input v-model="datingTopicTitle" class="glass-i" :placeholder="t('topic_title')"><textarea v-model="datingTopicContent" class="glass-i" rows="3" :placeholder="t('topic_desc')" style="resize:vertical;min-height:80px"></textarea><div class="flex gap-2"><button class="btn text-sm">{{t('post_topic')}}</button><button @click="showDatingTopic=false" class="btn-o text-sm">{{t('cancel')}}</button></div></div>
+<div v-if="showDatingForm" class="glass p-5 anim-up space-y-3"><h3 class="font-semibold">{{t('create_dating_profile')}}</h3><input class="glass-i" :placeholder="t('headline_placeholder')"><input class="glass-i" :placeholder="t('location_placeholder')"><textarea class="glass-i" rows="3" :placeholder="t('about_you')" style="resize:vertical;min-height:80px"></textarea><div class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer" style="border-color:rgba(255,255,255,0.1)"><span class="text-3xl text-gray-600">📷</span><p class="text-xs text-gray-500 mt-1">{{t('upload_photos')}}</p></div><div class="flex gap-2"><button class="btn text-sm">{{t('save_profile')}}</button><button @click="showDatingForm=false" class="btn-o text-sm">{{t('cancel')}}</button></div></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<div v-for="(p,i) in datingProfiles" :key="i" class="glass card-h overflow-hidden"><div style="height:180px;background:#2D2D44"><img :src="p.photo" class="w-full h-full object-cover" @error="e=>e.target.style.display='none'"></div><div class="p-4"><h3 class="font-semibold text-sm truncate">{{p.title}}</h3><p class="text-xs text-gray-400 mt-1">📍 {{p.location}}</p><div class="flex flex-wrap gap-1 my-2"><span v-for="t in p.interests" :key="t" class="text-xs px-2 py-0.5 rounded-md" style="background:rgba(255,255,255,0.04);color:#999">{{t}}</span></div><button class="btn w-full text-sm py-2">{{t('view_match')}}</button></div></div>
+</div>
+<div class="glass p-4"><h3 class="font-semibold mb-3 flex items-center gap-2">💬 {{t('dating_topics')}}</h3><div v-for="(t,i) in datingTopics" :key="i" class="p-3 rounded-xl cursor-pointer hover:opacity-80 transition" style="background:rgba(255,255,255,0.02)"><div class="flex justify-between"><span class="text-sm font-medium">{{t.title}}</span><span class="text-xs text-gray-500">{{t.time}}</span></div><div class="flex gap-3 mt-1 text-xs text-gray-500"><span>{{t.replies}} replies</span><span>{{t.views}} views</span></div></div></div>
+</div>
+
+<!-- ============ FORUM ============ -->
+<div v-if="section==='forum'" class="anim-in space-y-5">
+<div class="glass p-5 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(187,134,252,0.15)">💬</div><div><h2 class="font-bold">{{t('discussion_forum')}}</h2><p class="text-xs text-gray-400">{{t('forum_subtitle')}}</p></div></div><button @click="showForumTopic=!showForumTopic" class="btn flex items-center gap-1 text-sm">+ {{t('new_topic')}}</button></div>
+<div v-if="showForumTopic" class="glass p-5 anim-up space-y-3"><h3 class="font-semibold">{{t('create_topic')}}</h3><input v-model="forumTopicTitle" class="glass-i" :placeholder="t('topic_title')"><select v-model="forumTopicCat" class="glass-i"><option value="dating-advice">{{t('dating_advice')}}</option><option value="relationships">{{t('relationships')}}</option><option value="international">{{t('international_dating')}}</option><option value="first-date">{{t('first_date_tips')}}</option></select><textarea v-model="forumTopicContent" class="glass-i" rows="4" :placeholder="t('write_topic')" style="resize:vertical;min-height:100px"></textarea><div class="flex gap-2"><button class="btn text-sm">{{t('publish')}}</button><button @click="showForumTopic=false" class="btn-o text-sm">{{t('cancel')}}</button></div></div>
+<div class="glass p-3 flex flex-wrap gap-2"><button v-for="c in forumCats" :key="c.id" @click="forumCat=c.id" class="px-3 py-1.5 rounded-lg text-xs font-medium transition" :style="forumCat===c.id?'background:rgba(255,64,129,0.15);color:#FF4081;border:1px solid rgba(255,64,129,0.3)':'background:rgba(255,255,255,0.03);color:#999'">{{c.name}} ({{c.count}})</button></div>
+<div class="space-y-2"><div v-for="p in forumPosts" :key="p.id" class="glass p-4 card-h"><div class="flex gap-3"><div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,255,255,0.05);color:#888">💬</div><div class="min-w-0 flex-1"><div class="flex items-center gap-2 mb-1"><span v-if="p.pinned" class="text-xs" style="color:#FFD700">📌</span><span class="font-medium text-sm truncate">{{p.title}}</span></div><p class="text-xs text-gray-500 mb-2 truncate">{{p.content}}</p><div class="flex items-center gap-3 text-xs text-gray-500"><span>❤️ {{p.likes}}</span><span>💬 {{t('reply')}}</span><span>👁 {{p.views}} {{t('views_label')}}</span><span class="ml-auto">{{p.date}}</span></div></div></div></div></div>
+<div class="glass p-4 grid grid-cols-3 gap-4 text-center"><div><div class="text-lg font-bold" style="color:#BB86FC">256</div><div class="text-xs text-gray-500">{{t('topics_count')}}</div></div><div><div class="text-lg font-bold" style="color:#00E5FF">1,890</div><div class="text-xs text-gray-500">{{t('replies_count')}}</div></div><div><div class="text-lg font-bold" style="color:#FF4081">5,200</div><div class="text-xs text-gray-500">{{t('members_count')}}</div></div></div>
+</div>
+
+<!-- ============ SOCIAL ============ -->
+<div v-if="section==='social'" class="anim-in space-y-5">
+<div class="glass p-5 flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(255,105,180,0.15)">📷</div><div><h2 class="font-bold">{{t('social_circle')}}</h2><p class="text-xs text-gray-400">{{t('social_subtitle')}}</p></div></div>
+<div class="glass p-4"><div class="flex gap-3"><div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold" style="background:linear-gradient(135deg,#FF4081,#BB86FC)">{{user.email.charAt(0).toUpperCase()}}</div><div class="flex-1"><textarea v-model="socialPostText" class="w-full bg-transparent text-sm text-white outline-none resize-none" rows="2" :placeholder="t('social_placeholder')" style="border:none;min-height:50px"></textarea><div class="flex justify-between items-center mt-2"><button class="text-xs text-gray-500 hover:text-white flex items-center gap-1">📷 {{t('add_photo')}}</button><button @click="addSocialPost" :disabled="!socialPostText.trim()" class="btn text-xs px-3 py-1.5" :style="{opacity:socialPostText.trim()?1:0.4}">{{t('share')}}</button></div></div></div></div>
+<div class="space-y-4"><div v-for="p in socialPosts" :key="p.id" class="glass overflow-hidden"><div v-if="p.image" style="height:240px;background:#2D2D44"><img :src="p.image" class="w-full h-full object-cover"></div><div class="p-4"><div class="flex justify-between mb-2"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full flex items-center justify-center text-xs" style="background:rgba(255,255,255,0.08);color:#aaa">{{p.author}}</div><div><p class="text-xs font-medium">{{p.author}}</p><p class="text-xs text-gray-500">{{p.time}}</p></div></div></div><p class="text-sm text-gray-200 mb-3" v-if="p.content">{{p.content}}</p><div class="flex gap-4 pt-3 text-xs" style="border-top:1px solid rgba(255,255,255,0.05)"><button class="flex items-center gap-1 text-gray-500 hover:text-red-400">❤️ <span>{{p.likes}}</span></button><button @click="p.showComment=!p.showComment" class="flex items-center gap-1 text-gray-500 hover:text-teal-400">💬 {{t('comment')}}</button></div><div v-if="p.showComment" class="flex gap-2 mt-3 pt-3 anim-up" style="border-top:1px solid rgba(255,255,255,0.05)"><input v-model="p.commentText" class="flex-1 rounded-lg px-3 py-2 text-sm text-white outline-none" style="background:rgba(45,45,68,0.5);border:none" :placeholder="t('write_comment')"><button @click="p.commentText=''" class="p-2 rounded-lg text-white" style="background:#FF4081">➤</button></div></div></div></div>
+</div>
+
+<!-- ============ CHAT ============ -->
+<div v-if="section==='chats'" class="anim-in">
+<div v-if="!activeChat" class="space-y-4"><div class="glass p-5"><h2 class="font-bold">{{t('messages')}}</h2><p class="text-xs text-gray-400">{{t('chat_subtitle')}}</p></div>
+<div class="glass"><div v-for="c in chatContacts" :key="c.id" @click="openChat(c)" class="p-4 flex items-center gap-3 cursor-pointer hover:opacity-80 transition" style="border-bottom:1px solid rgba(255,255,255,0.04)"><div class="relative"><img :src="c.avatar" class="w-11 h-11 rounded-full object-cover"><span class="absolute bottom-0 right-0 dot" :class="c.online?'dot-on':'dot-off'" style="border:2px solid #1a1a2e"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between"><div class="flex items-center gap-2"><span class="font-medium text-sm">{{c.name}}</span><span v-if="c.ai" class="badge-ai">AI</span></div><span class="text-xs text-gray-500">{{c.time}}</span></div><p class="text-xs text-gray-400 truncate">{{c.lastMsg}}</p></div><div v-if="c.unread" class="w-5 h-5 rounded-full flex items-center justify-center text-xs" style="background:#FF4081">{{c.unread}}</div></div></div></div>
+<div v-else class="flex flex-col" style="height:calc(100vh - 150px)">
+<div class="glass p-3 flex items-center gap-3 rounded-b-none"><button @click="activeChat=null" class="text-gray-500 hover:text-white text-lg">←</button><img :src="activeChat.avatar" class="w-9 h-9 rounded-full object-cover"><div><div class="flex items-center gap-2"><span class="font-semibold text-sm">{{activeChat.name}}</span><span v-if="activeChat.ai" class="badge-ai">AI</span></div><span class="text-xs" :style="{color:activeChat.online?'#00E676':'#888'}">{{activeChat.online?t('online'):t('offline')}}</span></div>
+<button @click="doVoiceCall({id:activeChat.id,name:activeChat.name,avatar:activeChat.avatar,country:'US',online:true,age:25})" class="ml-auto btn-call flex items-center gap-1 text-xs font-bold" style="padding:8px 14px">📞 {{t('voice_call')}}</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3" style="background:rgba(0,0,0,0.2)"><div v-for="m in chatMessages" :key="m.id" class="flex" :class="m.me?'justify-end':'justify-start'"><div :class="m.me?'msg-me':'msg-other'">{{m.text}}</div></div><div ref="chatEnd"></div></div>
+<div class="glass p-3 flex gap-2 rounded-t-none"><input v-model="chatInput" @keyup.enter="sendMsg" class="flex-1 bg-transparent text-sm text-white outline-none" :placeholder="t('type_message')"><button @click="sendMsg" :disabled="!chatInput.trim()" class="p-2 rounded-lg text-white" style="background:#FF4081" :style="{opacity:chatInput.trim()?1:0.4}">➤</button></div>
+</div></div>
+
+<!-- ============ VOICE CALLS (WITH REAL TTS) ============ -->
+<div v-if="section==='calls'" class="anim-in">
+<div v-if="!inCall" class="space-y-5">
+<div class="glass p-5 flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(0,229,255,0.15)">📞</div><div><h2 class="font-bold">{{t('voice_calls_title')}}</h2><p class="text-xs text-gray-400">{{t('voice_calls_desc')}}</p></div></div>
+<div class="glass p-3 text-center" style="border:1px solid rgba(255,215,0,0.15)"><p class="text-xs text-gray-300">{{t('voice_ad_notice')}}</p><p class="text-xs text-gray-600">Adsterra · Zone 29615814</p></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<div v-for="c in callContacts" :key="c.id" class="glass p-4 card-h"><div class="flex items-center gap-3 mb-3"><img :src="c.avatar" class="w-12 h-12 rounded-full object-cover ring-2" style="ring-color:rgba(255,255,255,0.1)"><div><div class="flex items-center gap-2"><span class="font-semibold text-sm">{{c.name}}</span><span class="badge-ai">AI</span></div><span class="text-xs text-gray-500">{{c.country}} · {{c.language||'English'}}</span></div></div><p v-if="c.lastCall" class="text-xs text-gray-500 mb-2">🕐 {{t('last_call')}}: {{c.lastCall}}</p>
+<button @click="doVoiceCall({id:c.id,name:c.name,avatar:c.avatar,country:c.country,language:c.language,online:true,age:25})" class="btn-call w-full text-sm py-2.5 flex items-center justify-center gap-1 font-bold" style="font-size:13px">📞 {{t('start_voice_call')}}</button>
+</div></div></div>
+
+<div v-else class="flex flex-col items-center justify-center" style="min-height:70vh">
+<div class="glass p-8 w-full max-w-sm text-center space-y-5">
+<div :class="['w-24 h-24 mx-auto rounded-full overflow-hidden',callConnected?'pulse-ring':'']"><img :src="inCall.avatar" class="w-full h-full object-cover"></div>
+<div><h2 class="text-xl font-bold">{{inCall.name}}</h2>
+<div v-if="callConnecting" class="text-yellow-400 text-sm flex items-center justify-center gap-2 mt-1"><span class="inline-block w-3 h-3 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></span>{{t('connecting')}}...</div>
+<div v-if="callRinging" class="text-accent-teal text-sm flex items-center justify-center gap-2 mt-1"><span class="text-lg">📞</span>{{t('ringing')}}...</div>
+<div v-if="callConnected" class="text-green-400 text-sm flex items-center justify-center gap-1.5 mt-1"><span class="dot dot-on" style="animation:pulse 1s infinite"></span>{{t('connected')}} · {{callDuration}}</div>
+<div v-if="aiSpeaking" class="flex items-center justify-center gap-1 mt-2" style="height:24px"><div class="wave-bar" style="animation-delay:0s;height:16px"></div><div class="wave-bar" style="animation-delay:0.1s;height:24px"></div><div class="wave-bar" style="animation-delay:0.2s;height:18px"></div><div class="wave-bar" style="animation-delay:0.3s;height:22px"></div><div class="wave-bar" style="animation-delay:0.4s;height:14px"></div><span class="text-xs text-green-400 ml-2">{{inCall.name}} {{t('speaking')}}</span></div>
+</div>
+<p class="text-gray-500 text-xs">{{inCall.country}}</p>
+
+<div class="flex justify-center gap-4 mt-2">
+<button @click="toggleMute" class="w-12 h-12 rounded-full flex items-center justify-center text-xl transition-all" :style="callMuted?'background:rgba(239,68,68,0.2);color:#f87171;box-shadow:0 0 16px rgba(239,68,68,0.3)':'background:rgba(255,255,255,0.06);color:#aaa'" :title="callMuted?t('unmute'):t('mute')">{{callMuted?'🔇':'🎤'}}</button>
+<button @click="endCall" class="w-14 h-14 rounded-full flex items-center justify-center text-xl" style="background:#ef4444;color:#fff;box-shadow:0 4px 24px rgba(239,68,68,0.4)" :title="t('end_call')">📞</button>
+<button @click="toggleSpeaker" class="w-12 h-12 rounded-full flex items-center justify-center text-xl transition-all" :style="callSpeaker?'background:rgba(0,229,255,0.2);color:#00E5FF;box-shadow:0 0 16px rgba(0,229,255,0.3)':'background:rgba(255,255,255,0.06);color:#aaa'" :title="callSpeaker?t('speaker_on'):t('speaker_off')">{{callSpeaker?'🔊':'🔈'}}</button>
+</div>
+<div class="text-xs text-gray-500" style="margin-top:0.5rem">
+<span v-if="callSpeaker">📢 {{t('speaker_mode')}}</span>
+<span v-else>🎧 {{t('earpiece_mode')}}</span>
+</div>
+<p class="text-xs text-gray-600 mt-2">Ad supported · Adsterra · Zone 29615814</p>
+</div></div></div>
+
+<!-- ============ AI AGENTS ============ -->
+<div v-if="section==='ai'" class="anim-in space-y-5">
+<div class="glass p-5 flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(187,134,252,0.15)">🤖</div><div><h2 class="font-bold">{{t('ai_companions')}}</h2><p class="text-xs text-gray-400">{{t('ai_subtitle')}}</p></div></div>
+<div class="flex flex-col sm:flex-row gap-2"><div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span><input v-model="searchTerm" class="glass-i pl-9" :placeholder="t('search_agents')"></div><select v-model="countryFilter" class="glass-i max-sm:w-full" style="width:160px"><option value="all">{{t('all_countries')}}</option><option v-for="c in agentCountries" :value="c">{{c}}</option></select></div>
+<div class="grid-agents"><div v-for="a in allAgents.filter(x=>{if(searchTerm){let s=searchTerm.toLowerCase();if(!x.name.toLowerCase().includes(s)&&!x.country.toLowerCase().includes(s)&&!x.language.toLowerCase().includes(s))return false}if(countryFilter!=='all'&&x.country!==countryFilter)return false;return true}).slice(0,50)" :key="a.id" class="glass card-h p-3 text-center"><div class="relative mb-2 mx-auto" style="width:80px;height:80px;border-radius:50%;overflow:hidden"><img :src="a.avatar" class="w-full h-full object-cover" loading="lazy"></div><span class="font-semibold text-sm block">{{a.name}}</span><span class="text-xs text-gray-500">{{a.country}} · {{a.language}}</span><div class="flex gap-1.5 mt-2"><button @click="doMatch(a)" class="flex-1 py-1 rounded-md text-xs font-bold btn" style="padding:4px 0;font-size:10px">💬 Chat</button><button @click="doVoiceCall(a)" class="flex-1 py-1 rounded-md text-xs font-bold btn-call" style="padding:4px 0;font-size:10px">📞 Call</button></div></div></div>
+<div class="glass p-3 text-center text-xs text-gray-400">{{t('ai_footer')}}</div>
+</div>
+
+<!-- ============ PROFILE ============ -->
+<div v-if="section==='profile'" class="anim-in max-w-lg mx-auto space-y-5">
+<div class="glass p-6 text-center"><div class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-2xl font-bold mb-3" style="background:linear-gradient(135deg,#FF4081,#BB86FC)">{{user.email.charAt(0).toUpperCase()}}</div><h2 class="font-semibold text-lg">{{profile.name||'User'}}</h2><p class="text-sm text-gray-400">✉️ {{user.email}}</p><div v-if="!profileEditing"><button @click="profileEditing=true" class="btn-o text-sm mt-3">✏️ {{t('edit_profile')}}</button></div></div>
+<div v-if="!profileEditing" class="space-y-3">
+<div class="glass p-4"><p class="text-xs text-gray-500 mb-1">{{t('about_me')}}</p><p class="text-sm text-gray-200">{{profile.bio||t('no_bio')}}</p></div>
+<div class="glass p-4"><p class="text-xs text-gray-500 mb-1">{{t('country_label')}}</p><p class="text-sm">{{profile.country||'United States'}}</p></div>
+<div class="glass p-4"><p class="text-xs text-gray-500 mb-1">{{t('language_label')}}</p><p class="text-sm">{{profile.language||'English'}}</p></div>
+<div class="glass p-4"><p class="text-xs text-gray-500 mb-2">{{t('interests_label')}}</p><div class="flex flex-wrap gap-2"><span v-for="i in (profile.interests||[])" :key="i" class="px-3 py-1 rounded-full text-xs" style="background:rgba(255,64,129,0.1);color:#FF4081">{{i}}</span><span v-if="!profile.interests||!profile.interests.length" class="text-xs text-gray-500">{{t('no_interests')}}</span></div></div>
+<div class="glass p-4"><p class="text-xs text-gray-500 mb-2">{{t('photos_label')}}</p><div class="grid grid-cols-3 gap-2"><div v-for="i in 3" :key="i" class="aspect-square rounded-lg flex items-center justify-center cursor-pointer" style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1)">📷</div></div></div>
+</div>
+<div v-else class="glass p-5 space-y-3 anim-up"><h3 class="font-semibold">{{t('edit_profile')}}</h3><input v-model="profile.name" class="glass-i" :placeholder="t('full_name')"><textarea v-model="profile.bio" class="glass-i" rows="3" :placeholder="t('about_me')" style="resize:vertical;min-height:70px"></textarea><select v-model="profile.country" class="glass-i"><option v-for="c in countries" :value="c.code">{{c.name}}</option></select><select v-model="profile.language" class="glass-i"><option v-for="l in languages" :value="l.code">{{l.name}}</option></select><input v-model="profile.interestsStr" class="glass-i" :placeholder="t('interests_placeholder')"><div class="flex gap-2"><button @click="saveProfile" class="btn text-sm">{{t('save_changes')}}</button><button @click="profileEditing=false" class="btn-o text-sm">{{t('cancel')}}</button></div></div>
+</div>
+
+<!-- ============ PREMIUM ============ -->
+<div v-if="section==='premium'" class="anim-in max-w-3xl mx-auto space-y-5">
+<div class="glass p-8 text-center relative overflow-hidden"><div style="position:absolute;top:0;right:0;width:200px;height:200px;border-radius:50%;background:rgba(255,215,0,0.08);filter:blur(80px)"></div><div style="position:relative;z-index:1"><div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3 text-sm" style="background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:#FFD700">👑 {{t('luxury_edition')}}</div><h1 class="text-3xl font-bold mb-2" style="background:linear-gradient(135deg,#FFD700,#FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{t('premium_title')}}</h1><p class="text-gray-400 text-sm mb-4">{{t('premium_desc')}}</p><div class="text-3xl font-bold" style="color:#FFD700">$9.99<span class="text-base text-gray-500">/mo</span></div><button class="btn-gold mt-4 px-8 py-3">👑 {{t('upgrade_premium')}}</button></div></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"><div v-for="f in premiumFeatures" :key="f.title" class="glass p-5 card-h" style="border:1px solid rgba(255,215,0,0.08)"><div class="text-2xl mb-2">{{f.icon}}</div><h3 class="font-semibold text-sm mb-1">{{f.title}}</h3><p class="text-xs text-gray-400">{{f.desc}}</p></div></div>
+<div class="glass p-5 text-center"><h3 class="font-bold" style="color:#FFD700">{{t('join_premium')}}</h3><p class="text-xs text-gray-400 mt-1">{{t('premium_cta')}}</p></div>
+</div>
+
+<!-- ============ SETTINGS ============ -->
+<div v-if="section==='settings'" class="anim-in max-w-lg mx-auto space-y-4">
+<div class="glass p-5"><h2 class="font-bold mb-4">{{t('settings_title')}}</h2>
+<div class="space-y-1">
+<div @click="showLangPicker=true" class="flex justify-between items-center p-3 rounded-xl hover:opacity-80 transition cursor-pointer" style="background:rgba(255,255,255,0.01)"><div class="flex items-center gap-3"><span class="text-lg">🌐</span><div><p class="text-sm">{{t('language')}}</p><p class="text-xs text-gray-500">{{langNames[appLang]||'English'}}</p></div></div><span class="text-xs" style="color:#FF4081">{{t('change')}}</span></div>
+<div @click="showRegionPicker=true" class="flex justify-between items-center p-3 rounded-xl hover:opacity-80 transition cursor-pointer" style="background:rgba(255,255,255,0.01)"><div class="flex items-center gap-3"><span class="text-lg">📍</span><div><p class="text-sm">{{t('region')}}</p><p class="text-xs text-gray-500">{{getRegionName(userRegion)}}</p></div></div><span class="text-xs" style="color:#FF4081">{{t('change')}}</span></div>
+<div class="flex justify-between items-center p-3 rounded-xl" style="background:rgba(255,255,255,0.01)"><div class="flex items-center gap-3"><span class="text-lg">🌙</span><div><p class="text-sm">{{t('dark_mode')}}</p><p class="text-xs text-gray-500">{{t('always_on')}}</p></div></div><span class="text-xs" style="color:#FF4081">{{t('toggle')}}</span></div>
+<div class="flex justify-between items-center p-3 rounded-xl" style="background:rgba(255,255,255,0.01)"><div class="flex items-center gap-3"><span class="text-lg">🛡️</span><div><p class="text-sm">{{t('privacy')}}</p></div></div><span class="text-xs" style="color:#FF4081">{{t('configure')}}</span></div>
+<div class="flex justify-between items-center p-3 rounded-xl" style="background:rgba(255,255,255,0.01)"><div class="flex items-center gap-3"><span class="text-lg">ℹ️</span><div><p class="text-sm">{{t('about')}}</p><p class="text-xs text-gray-500">v2.0</p></div></div></div>
+</div></div>
+<div v-if="showLangPicker" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85)" @click.self="showLangPicker=false"><div class="glass p-6 w-full max-w-sm anim-up"><h3 class="font-bold mb-4 text-center">🌐 {{t('select_language')}}</h3><div class="space-y-1 max-h-72 overflow-y-auto"><div v-for="(name,code) in langNames" :key="code" @click="setLang(code);showLangPicker=false" class="p-3 rounded-lg cursor-pointer hover:opacity-80 flex items-center justify-between" :style="{background:appLang===code?'rgba(255,64,129,0.1)':'rgba(255,255,255,0.02)'}"><span class="text-sm">{{name}}</span><span v-if="appLang===code" style="color:#FF4081">✓</span></div></div><button @click="showLangPicker=false" class="btn-o w-full mt-4 text-sm">{{t('close')}}</button></div></div>
+
+<!-- Region Picker Modal -->
+<div v-if="showRegionPicker" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,0.85)" @click.self="showRegionPicker=false"><div class="glass p-6 w-full max-w-sm anim-up"><h3 class="font-bold mb-4 text-center">📍 {{t('select_region')}}</h3><div class="space-y-1 max-h-72 overflow-y-auto">
+<div @click="userRegion='Global';showRegionPicker=false" class="p-3 rounded-lg cursor-pointer hover:opacity-80 flex items-center justify-between" :style="{background:userRegion==='Global'?'rgba(255,64,129,0.1)':'rgba(255,255,255,0.02)'}"><span class="text-sm">🌍 Global</span><span v-if="userRegion==='Global'" style="color:#FF4081">✓</span></div>
+<div v-for="r in allRegions" :key="r.code" @click="userRegion=r.code;showRegionPicker=false" class="p-3 rounded-lg cursor-pointer hover:opacity-80 flex items-center justify-between" :style="{background:userRegion===r.code?'rgba(255,64,129,0.1)':'rgba(255,255,255,0.02)'}"><span class="text-sm">{{r.flag}} {{r.name}}</span><span v-if="userRegion===r.code" style="color:#FF4081">✓</span></div>
+</div><button @click="showRegionPicker=false" class="btn-o w-full mt-4 text-sm">{{t('close')}}</button></div></div>
+<div class="glass p-5"><button @click="logout" class="w-full p-3 rounded-lg text-sm font-medium text-center transition" style="border:1px solid rgba(239,68,68,0.3);color:#f87171;background:rgba(239,68,68,0.05)">🚪 {{t('sign_out')}}</button></div>
+<p class="text-center text-xs text-gray-600">SweetDate Voice v2.0 · Adsterra · Zone 29615814</p>
+</div>
+
+</main>
+
+<!-- ============ AD WALL MODAL (REAL ADS + REVENUE) ============ -->
+<div v-if="showAdWall" class="fixed inset-0 z-[999] flex items-center justify-center p-4" style="background:rgba(0,0,0,0.94)">
+<div class="glass p-6 w-full max-w-md text-center anim-up">
+<div class="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center pulse-ring" style="background:rgba(255,64,129,0.15)"><span class="text-xl">📺</span></div>
+<h3 class="text-base font-bold mb-1 text-white">{{adType==='call'?t('ad_watch_call'):t('ad_watch_match')}}</h3>
+<p class="text-gray-400 text-xs mb-3">{{t('ad_watch_desc')}}</p>
+
+<div v-if="!adWatching && !adDone" class="space-y-3">
+<div class="rounded-xl overflow-hidden" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
+<div class="p-4 text-center">
+<div class="font-semibold text-white text-sm mb-1">SweetDate Voice</div>
+<p class="text-xs text-gray-400 mb-3">Watch a short ad to unlock this feature</p>
+<a :href="adsterraDirectLink" target="_blank" @click="trackAdClick" class="inline-block text-sm px-5 py-2 rounded-lg font-bold mb-2" style="background:linear-gradient(135deg,#FF4081,#C60055);color:#fff">Click to View Offer</a>
+<p class="text-xs text-gray-500">or</p>
+<button @click="startAd" class="btn w-full flex items-center justify-center gap-2 text-base py-3 font-bold text-lg mt-2">▶ {{t('watch_ad_now')}}</button>
+</div>
+</div>
+
+<div v-if="adWatching" class="space-y-3">
+<div class="rounded-xl overflow-hidden" style="background:rgba(45,45,68,0.6);border:1px solid rgba(255,255,255,0.1)">
+<div class="p-4 flex justify-center">
+<div id="container-c587a89355da29a9efa7364527609233" style="min-width:300px;min-height:50px"></div>
+</div></div>
+<div class="flex justify-between text-sm"><span class="text-gray-400">⏳ {{t('watching_ad')}}...</span><span style="font-size:20px;font-weight:bold;color:#FF4081">{{adTimeLeft}}s</span></div>
+<div class="h-3 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.08)"><div class="h-full rounded-full transition-all duration-1000 ease-linear" style="background:linear-gradient(90deg,#FF4081,#FFD700)" :style="{width:adProgress+'%'}"></div></div>
+<p class="text-xs text-gray-500">Ad supports free service · Adsterra · Zone 29615814</p>
+</div>
+<div v-if="adDone" class="text-green-400 py-4"><div class="text-5xl mb-2">✅</div><p class="font-semibold text-xl">{{t('ad_completed')}}</p><p class="text-gray-400 text-sm mt-2">{{t('reconnecting')}}...</p></div>
+<button @click="closeAdWall" class="mt-4 text-sm text-gray-600 hover:text-white block w-full text-center py-2">{{t('cancel')}}</button>
+</div></div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="glass fixed bottom-0 left-0 right-0 z-40 lg:hidden" style="border-radius:0;border-top:1px solid rgba(255,255,255,0.05)">
+<div class="flex justify-around py-2 px-1">
+<div v-for="n in navItems.slice(0,4)" :key="n.id" @click="section=n.id" class="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg cursor-pointer" :style="{color:section===n.id?'#FF4081':'#888'}"><span v-html="n.icon" style="transform:scale(0.9)"></span><span style="font-size:9px">{{t(n.mKey||n.tKey)}}</span></div>
+<div @click="section='chats'" class="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg cursor-pointer" :style="{color:section==='chats'?'#FF4081':'#888'}"><span style="transform:scale(0.9)">💬</span><span style="font-size:9px">{{t('chat_mobile')}}</span></div>
+<div @click="section='profile'" class="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg cursor-pointer" :style="{color:section==='profile'?'#FF4081':'#888'}"><span style="transform:scale(0.9)">👤</span><span style="font-size:9px">{{t('profile_mobile')}}</span></div>
+</div></nav>
+</div></div>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+const {createApp,ref,computed,watch,nextTick,onMounted,onUnmounted}=Vue
+const app=createApp({setup(){
+const firebaseConfig={apiKey:"AIzaSyAf0CIHBZ-wEQJ8CCUUWo1Wl9P7typ_ZPI",authDomain:"gptcall-416910.firebaseapp.com",projectId:"gptcall-416910",storageBucket:"gptcall-416910.appspot.com",messagingSenderId:"99275526699",appId:"1:99275526699:web:3b623e1e2996108b52106e"}
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.firestore()
+
+const user=ref(null),authLoading=ref(false),authError=ref(''),isRegister=ref(false)
+const loginEmail=ref(''),loginPass=ref(''),regName=ref(''),regEmail=ref(''),regPass=ref('')
+auth.onAuthStateChanged(u=>{user.value=u;if(u)loadProfile()})
+async function doLogin(){authError.value='';authLoading.value=true;try{await auth.signInWithEmailAndPassword(loginEmail.value,loginPass.value)}catch(e){authError.value=e.message};authLoading.value=false}
+async function doRegister(){authError.value='';authLoading.value=true;if(regPass.value.length<6){authError.value='Password must be at least 6 characters';authLoading.value=false;return};try{const r=await auth.createUserWithEmailAndPassword(regEmail.value,regPass.value);await db.collection('users').doc(r.user.uid).set({name:regName.value,createdAt:Date.now()})}catch(e){authError.value=e.message};authLoading.value=false}
+function logout(){auth.signOut();section.value='home';endCall()}
+
+// ===== i18n + Region =====
+const appLang=ref(localStorage.getItem('sweetdate_lang')||'en'),showLangPicker=ref(false),showRegionPicker=ref(false)
+const userRegion=ref(localStorage.getItem('sweetdate_region')||'Global')
+const langNames={en:'English',zh:'中文(简体)',zh_tw:'中文(繁體)',ja:'日本語',ko:'한국어',fr:'Français',es:'Español',de:'Deutsch',pt:'Português',it:'Italiano',ru:'Русский',hi:'हिन्दी',ar:'العربية',th:'ภาษาไทย',vi:'Tiếng Việt',id:'Bahasa Indonesia',tr:'Türkçe',nl:'Nederlands',pl:'Polski'}
+const allRegions=[{code:'US',flag:'🇺🇸',name:'United States'},{code:'GB',flag:'🇬🇧',name:'United Kingdom'},{code:'CN',flag:'🇨🇳',name:'China'},{code:'JP',flag:'🇯🇵',name:'Japan'},{code:'KR',flag:'🇰🇷',name:'South Korea'},{code:'FR',flag:'🇫🇷',name:'France'},{code:'DE',flag:'🇩🇪',name:'Germany'},{code:'ES',flag:'🇪🇸',name:'Spain'},{code:'IT',flag:'🇮🇹',name:'Italy'},{code:'BR',flag:'🇧🇷',name:'Brazil'},{code:'IN',flag:'🇮🇳',name:'India'},{code:'RU',flag:'🇷🇺',name:'Russia'},{code:'TH',flag:'🇹🇭',name:'Thailand'},{code:'VN',flag:'🇻🇳',name:'Vietnam'},{code:'PH',flag:'🇵🇭',name:'Philippines'},{code:'ID',flag:'🇮🇩',name:'Indonesia'},{code:'MX',flag:'🇲🇽',name:'Mexico'},{code:'AR',flag:'🇦🇷',name:'Argentina'},{code:'TR',flag:'🇹🇷',name:'Turkey'},{code:'EG',flag:'🇪🇬',name:'Egypt'},{code:'NG',flag:'🇳🇬',name:'Nigeria'},{code:'ZA',flag:'🇿🇦',name:'South Africa'},{code:'AU',flag:'🇦🇺',name:'Australia'},{code:'CA',flag:'🇨🇦',name:'Canada'}]
+const texts={
+en:{tagline:'Global Dating & Voice Chat',email:'Email',password:'Password',sign_in:'Sign In',signing_in:'Signing in...',sign_up:'Sign Up',no_account:"Don't have an account?",full_name:'Full Name',min_password:'Min. 6 characters',create_account:'Create Account',creating:'Creating...',has_account:'Already have an account?',logout:'Logout',premium:'Premium',home:'Home',dating:'Dating',forum:'Forum',social:'Social',chats:'Chats',calls:'Calls',ai_agents:'AI Agents',global_community:'Global Community',discover_match:'Discover Your Match',home_desc:'Connect with people and AI worldwide. Watch a short ad to start — completely free.',ad_supported:'Free Ad-Supported Voice Dating',online:'Online',offline:'Offline',match_btn:'Match',call_btn:'Call',voice_call:'Voice Call',load_more:'Load More Agents',ai_agents_count:'AI Agents',global_users:'Global Users',countries_count:'Countries',free_label:'Free',ad_supported_label:'Ad-Supported',all_agents:'All Agents',online_now:'Online Now',female:'Female',male:'Male',all_countries:'All Countries',search_placeholder:'Search by name, country, language...',dating_zone:'Dating Zone',dating_subtitle:'Find your perfect match worldwide',start_topic:'Start Topic',create_profile_btn:'Create Profile',start_dating_topic:'Start a Dating Topic',topic_title:'Topic title...',topic_desc:'Describe what you are looking for...',post_topic:'Post Topic',create_dating_profile:'Create Dating Profile',headline_placeholder:'Headline...',location_placeholder:'Location...',about_you:'About you...',upload_photos:'Click to upload photos (max 5)',save_profile:'Save Profile',view_match:'View & Match',dating_topics:'Dating Topics',cancel:'Cancel',discussion_forum:'Discussion Forum',forum_subtitle:'Share thoughts & connect',new_topic:'New Topic',create_topic:'Create New Topic',dating_advice:'Dating Advice',relationships:'Relationships',international_dating:'International Dating',first_date_tips:'First Date Tips',write_topic:'Write your topic...',publish:'Publish',reply:'Reply',views_label:'views',topics_count:'Topics',replies_count:'Replies',members_count:'Members',social_circle:'Social Circle',social_subtitle:'Share moments with the community',social_placeholder:'Share your thoughts...',add_photo:'Add Photo',share:'Share',comment:'Comment',write_comment:'Write a comment...',messages:'Messages',chat_subtitle:'Chat with matches & AI',type_message:'Type a message...',voice_calls_title:'Voice Calls',voice_calls_desc:'Start voice call with agents worldwide',voice_ad_notice:'Voice calls require watching a short ad',last_call:'Last call',start_voice_call:'Start Voice Call',connecting:'Connecting',ringing:'Ringing',connected:'Connected',speaking:'is speaking',mute:'Mute',unmute:'Unmute',speaker_on:'Speaker',speaker_off:'Earpiece',speaker_mode:'Speaker mode - loud audio',earpiece_mode:'Earpiece mode',end_call:'End Call',ai_companions:'AI Companions',ai_subtitle:'1,000+ agents from 25+ countries',search_agents:'Search agents...',ai_footer:'1,000+ AI agents · 25+ countries · Free ad-supported',edit_profile:'Edit Profile',about_me:'About Me',no_bio:'No bio yet.',country_label:'Country',language_label:'Language',interests_label:'Interests',no_interests:'No interests added',photos_label:'Photos',interests_placeholder:'Travel, Music, Food...',save_changes:'Save Changes',settings_title:'Settings',language:'Language',region:'Country/Region',select_region:'Select Country/Region',dark_mode:'Dark Mode',always_on:'Always On',privacy:'Privacy',about:'About',toggle:'Toggle',configure:'Configure',change:'Change',select_language:'Select Language',close:'Close',sign_out:'Sign Out',luxury_edition:'Luxury Edition',premium_title:'SweetDate Premium',premium_desc:'Unlock the ultimate dating experience',upgrade_premium:'Upgrade to Premium',join_premium:'Join Premium Today',premium_cta:'Your support keeps this service free for everyone',ad_watch_match:'Watch Ad to Find Match',ad_watch_call:'Watch Ad to Start Voice Call',ad_watch_desc:'Watch a short 10s ad to continue. This keeps our service free.',ad_content:'Advertisement Content',watch_ad_now:'Watch Ad Now',ad_publisher:'Publisher',watching_ad:'Watching ad',audio_ad_playing:'Audio Ad Playing',ad_completed:'Ad Completed!',reconnecting:'Connecting...',chat_mobile:'Chat',profile_mobile:'Profile'},
+zh:{tagline:'全球约会与语音聊天',email:'电子邮箱',password:'密码',sign_in:'登录',signing_in:'登录中...',sign_up:'注册',no_account:'还没有账号？',full_name:'姓名',min_password:'密码至少6位',create_account:'创建账号',creating:'创建中...',has_account:'已有账号？',logout:'退出',premium:'高级版',home:'主页',dating:'约会',forum:'论坛',social:'社交',chats:'聊天',calls:'通话',ai_agents:'AI代理',global_community:'全球社区',discover_match:'发现你的匹配',home_desc:'与全球用户和AI伴侣联系。观看广告即可免费匹配。',ad_supported:'免费广告支持语音约会',online:'在线',offline:'离线',match_btn:'配对',call_btn:'通话',voice_call:'语音通话',load_more:'加载更多',ai_agents_count:'AI代理',global_users:'全球用户',countries_count:'国家',free_label:'免费',ad_supported_label:'广告支持',all_agents:'所有代理',online_now:'在线',female:'女性',male:'男性',all_countries:'所有国家',search_placeholder:'按姓名、国家搜索...',dating_zone:'约会区',dating_subtitle:'找到完美搭档',start_topic:'发起话题',create_profile_btn:'创建档案',start_dating_topic:'发起约会话题',topic_title:'话题标题...',topic_desc:'描述你想找什么...',post_topic:'发布',create_dating_profile:'创建约会档案',headline_placeholder:'标题...',location_placeholder:'位置...',about_you:'关于你...',upload_photos:'点击上传照片',save_profile:'保存',view_match:'查看配对',dating_topics:'约会话题',cancel:'取消',discussion_forum:'讨论区',forum_subtitle:'分享想法',new_topic:'发起话题',create_topic:'创建新话题',dating_advice:'约会建议',relationships:'恋爱关系',international_dating:'国际约会',first_date_tips:'首次约会技巧',write_topic:'写下你的话题...',publish:'发布',reply:'回复',views_label:'查看',topics_count:'话题',replies_count:'回复',members_count:'成员',social_circle:'社交圈',social_subtitle:'分享精彩时刻',social_placeholder:'分享你的想法...',add_photo:'添加照片',share:'分享',comment:'评论',write_comment:'写评论...',messages:'消息',chat_subtitle:'与匹配对象聊天',type_message:'输入消息...',voice_calls_title:'语音通话',voice_calls_desc:'与全球代理语音通话',voice_ad_notice:'语音通话需要观看广告',last_call:'上次通话',start_voice_call:'开始语音通话',connecting:'连接中',ringing:'响铃中',connected:'已连接',speaking:'正在说话',mute:'静音',unmute:'取消静音',speaker_on:'扬声器',speaker_off:'听筒',speaker_mode:'扬声器模式',earpiece_mode:'听筒模式',end_call:'挂断',ai_companions:'AI伴侣',ai_subtitle:'来自25国的1000+代理',search_agents:'搜索代理...',ai_footer:'1000+ AI代理 · 25+ 国家 · 免费',edit_profile:'编辑资料',about_me:'关于我',no_bio:'暂无简介',country_label:'国家',language_label:'语言',interests_label:'兴趣',no_interests:'未添加',photos_label:'照片',interests_placeholder:'旅行, 音乐, 美食...',save_changes:'保存',settings_title:'设置',language:'语言',region:'国家/地区',select_region:'选择国家/地区',dark_mode:'深色模式',always_on:'始终开启',privacy:'隐私',about:'关于',toggle:'切换',configure:'配置',change:'更改',select_language:'选择语言',close:'关闭',sign_out:'退出',luxury_edition:'豪华版',premium_title:'SweetDate 高级版',premium_desc:'解锁终极体验',upgrade_premium:'升级高级版',join_premium:'立即加入',premium_cta:'您的支持让服务免费',ad_watch_match:'观看广告配对',ad_watch_call:'观看广告通话',ad_watch_desc:'观看10秒广告继续。广告支撑免费服务。',ad_content:'广告内容',watch_ad_now:'立即观看',ad_publisher:'发布商',watching_ad:'正在观看',audio_ad_playing:'广告播放中',ad_completed:'广告完成！',reconnecting:'连接中...',chat_mobile:'聊天',profile_mobile:'个人'},
+ja:{tagline:'グローバルデート＆ボイスチャット',email:'メール',password:'パスワード',sign_in:'ログイン',signing_in:'ログイン中...',sign_up:'登録',no_account:'アカウント登録はこちら',full_name:'氏名',min_password:'6文字以上',create_account:'作成',creating:'作成中...',has_account:'ログインはこちら',logout:'ログアウト',premium:'プレミアム',home:'ホーム',dating:'デート',forum:'フォーラム',social:'ソーシャル',chats:'チャット',calls:'通話',ai_agents:'AI',global_community:'グローバル',discover_match:'マッチを探す',home_desc:'世界中のユーザーやAIとつながろう。広告で無料。',ad_supported:'無料広告サポート',online:'オンライン',offline:'オフライン',match_btn:'マッチ',call_btn:'通話',voice_call:'ボイスコール',load_more:'もっと見る',ai_agents_count:'AIエージェント',global_users:'ユーザー',countries_count:'国',free_label:'無料',ad_supported_label:'広告',all_agents:'すべて',online_now:'オンライン',female:'女性',male:'男性',all_countries:'すべての国',search_placeholder:'名前、国で検索...',dating_zone:'デートゾーン',dating_subtitle:'完璧なマッチを見つける',start_topic:'トピック',create_profile_btn:'プロフィール',start_dating_topic:'トピック開始',topic_title:'タイトル...',topic_desc:'説明...',post_topic:'投稿',create_dating_profile:'プロフィール作成',headline_placeholder:'ヘッドライン...',location_placeholder:'場所...',about_you:'自己紹介...',upload_photos:'写真をアップロード',save_profile:'保存',view_match:'詳細',dating_topics:'トピック',cancel:'キャンセル',discussion_forum:'フォーラム',forum_subtitle:'考えを共有',new_topic:'新規',create_topic:'トピック作成',dating_advice:'デートアドバイス',relationships:'恋愛',international_dating:'国際',first_date_tips:'初デート',write_topic:'内容を書く...',publish:'公開',reply:'返信',views_label:'閲覧',topics_count:'トピック',replies_count:'返信',members_count:'メンバー',social_circle:'ソーシャル',social_subtitle:'瞬間を共有',social_placeholder:'考えを共有...',add_photo:'写真追加',share:'共有',comment:'コメント',write_comment:'コメント...',messages:'メッセージ',chat_subtitle:'マッチとチャット',type_message:'メッセージ...',voice_calls_title:'音声通話',voice_calls_desc:'エージェントと通話',voice_ad_notice:'広告視聴が必要',last_call:'前回',start_voice_call:'通話開始',connecting:'接続中',ringing:'呼出中',connected:'接続済',speaking:'話し中',mute:'ミュート',unmute:'解除',speaker_on:'スピーカー',speaker_off:'受話',speaker_mode:'スピーカーモード',earpiece_mode:'受話モード',end_call:'終了',ai_companions:'AIコンパニオン',ai_subtitle:'25カ国1000+エージェント',search_agents:'検索...',ai_footer:'1000+ AI · 25+ 国 · 無料',edit_profile:'編集',about_me:'自己紹介',no_bio:'未設定',country_label:'国',language_label:'言語',interests_label:'趣味',no_interests:'未追加',photos_label:'写真',interests_placeholder:'旅行, 音楽...',save_changes:'保存',settings_title:'設定',language:'言語',region:'国/地域',select_region:'国/地域を選択',dark_mode:'ダーク',always_on:'常時オン',privacy:'プライバシー',about:'について',toggle:'切替',configure:'設定',change:'変更',select_language:'言語選択',close:'閉じる',sign_out:'ログアウト',luxury_edition:'ラグジュアリー',premium_title:'プレミアム',premium_desc:'究極の体験',upgrade_premium:'アップグレード',join_premium:'今すぐ参加',premium_cta:'サポートで無料提供',ad_watch_match:'広告でマッチ',ad_watch_call:'広告で通話',ad_watch_desc:'10秒の広告を見て続ける',ad_content:'広告',watch_ad_now:'見る',ad_publisher:'パブリッシャー',watching_ad:'視聴中',audio_ad_playing:'再生中',ad_completed:'完了！',reconnecting:'接続中...',chat_mobile:'チャット',profile_mobile:'プロフ'}
+}
+function t(key){return (texts[appLang.value]||texts.en)[key]||texts.en[key]||key}
+function setLang(l){appLang.value=l;localStorage.setItem('sweetdate_lang',l)}
+function setRegion(r){userRegion.value=r;localStorage.setItem('sweetdate_region',r)}
+
+// Profile
+const profile=ref({name:'',bio:'',country:'US',language:'en',interests:[],interestsStr:''}),profileEditing=ref(false)
+async function loadProfile(){if(!user.value)return;try{const d=await db.collection('users').doc(user.value.uid).get();if(d.exists){const data=d.data();profile.value={name:data.name||'',bio:data.bio||'',country:data.country||'US',language:data.language||'en',interests:data.interests||[],interestsStr:(data.interests||[]).join(', ')}}}catch(e){}}
+function saveProfile(){const interests=profile.value.interestsStr.split(',').map(i=>i.trim()).filter(Boolean);profile.value.interests=interests;db.collection('users').doc(user.value.uid).set({name:profile.value.name,bio:profile.value.bio,country:profile.value.country,language:profile.value.language,interests},{merge:true});profileEditing.value=false}
+
+const countries=[{code:'US',name:'United States'},{code:'GB',name:'United Kingdom'},{code:'CN',name:'China'},{code:'JP',name:'Japan'},{code:'KR',name:'South Korea'},{code:'FR',name:'France'},{code:'DE',name:'Germany'},{code:'ES',name:'Spain'},{code:'IT',name:'Italy'},{code:'BR',name:'Brazil'},{code:'IN',name:'India'},{code:'AU',name:'Australia'},{code:'CA',name:'Canada'},{code:'MX',name:'Mexico'},{code:'RU',name:'Russia'}]
+const languages=[{code:'en',name:'English'},{code:'zh',name:'中文'},{code:'ja',name:'日本語'},{code:'ko',name:'한국어'},{code:'fr',name:'Français'},{code:'de',name:'Deutsch'},{code:'es',name:'Español'}]
+
+const section=ref('home')
+const navItems=[
+{id:'home',tKey:'home',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'},
+{id:'dating',tKey:'dating',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'},
+{id:'forum',tKey:'forum',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'},
+{id:'social',tKey:'social',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'},
+{id:'chats',tKey:'chats',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>'},
+{id:'calls',tKey:'calls',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 015.12 12.36a19.5 19.5 0 01-6-6A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>'},
+{id:'ai',tKey:'ai_agents',icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M8 9h1m6 0h1m-4 4h3m-6 3h8"/></svg>'}]
+
+// AI Agents
+const agentCountries=['US','GB','JP','KR','FR','DE','ES','IT','BR','IN','AU','CA','MX','RU','CN','PH','TH','VN','AR','CO','NG','ZA','EG','TR','ID']
+const agentPage=ref(0),allAgents=ref([])
+function genAgents(page){
+const names=['Sophia','Emma','Luna','Yuki','Hana','Mei','Rio','Elena','Isabella','Chloe','Mia','Aria','Lily','Zoe','Grace','Anna','Lisa','Maria','Sara','Rose','Olivia','Ava','Amelia','Charlotte','Harper','Evelyn','Abigail','Emily','Elizabeth','Sofia','Ella','Scarlett','Victoria','Madison','Penelope','Layla','Nora','Riley','Zoey','Stella','Hazel','Ellie','Violet','Aurora','Savannah','Audrey','Brooklyn','Bella','Claire']
+const p=['Friendly','Sweet','Fun','Romantic','Intelligent','Shy','Confident','Artistic','Sporty','Warm']
+const lm={US:'English',GB:'English',JP:'Japanese',KR:'Korean',FR:'French',DE:'German',ES:'Spanish',IT:'Italian',BR:'Portuguese',IN:'Hindi',AU:'English',CA:'English',MX:'Spanish',RU:'Russian',CN:'Chinese',PH:'Filipino',TH:'Thai',VN:'Vietnamese',AR:'Spanish',CO:'Spanish',NG:'English',ZA:'English',EG:'Arabic',TR:'Turkish',ID:'Indonesian'}
+const r=[]
+for(let i=0;i<50;i++){const idx=page*50+i;const c=agentCountries[idx%agentCountries.length];r.push({id:'ai-'+idx,name:names[idx%names.length],avatar:'https://i.pravatar.cc/200?img='+(((idx%50)+11)),age:20+(idx%15),country:c,language:lm[c]||'English',personality:p[idx%10],interests:[['Travel','Music'],['Food','Movies'],['Fitness','Art'],['Reading','Nature'],['Dancing','Cooking']][idx%5],online:idx%4!==0})}
+return r}
+onMounted(()=>{allAgents.value=genAgents(0)})
+watch(agentPage,p=>{allAgents.value=[...allAgents.value,...genAgents(p)]})
+const searchTerm=ref(''),agentFilter=ref('all'),countryFilter=ref('all')
+const filteredAgents=computed(()=>{let a=allAgents.value;if(searchTerm.value){const s=searchTerm.value.toLowerCase();a=a.filter(x=>x.name.toLowerCase().includes(s)||x.country.toLowerCase().includes(s)||x.language.toLowerCase().includes(s))}if(agentFilter.value==='online')a=a.filter(x=>x.online);if(agentFilter.value==='female')a=a.filter((_,i)=>(i%3)!==0);if(agentFilter.value==='male')a=a.filter((_,i)=>(i%3)===0);if(countryFilter.value!=='all')a=a.filter(x=>x.country===countryFilter.value);return a})
+
+// ===== AD WALL WITH REAL ADS =====
+const showAdWall=ref(false),adType=ref('match'),adWatching=ref(false),adDone=ref(false),adProgress=ref(0),adTimeLeft=ref(10)
+const currentAd=ref(null)
+const adsterraDirectLink=ref(window.adsterraDirectLink||'https://www.effectivecpmnetwork.com/r3vd53hi?key=9d612f8719751c55df74c5f54b317e61')
+let adTimer=null,pendingAdCallback=null,allCustomAds=[]
+onMounted(async()=>{try{const s=await db.collection('admin_ads').get();allCustomAds=[];s.forEach(d=>{const data=d.data();if(data.active)allCustomAds.push({id:d.id,...data})})}catch(e){}})
+function pickRandomAd(){const active=allCustomAds;if(active.length===0)return null;return active[Math.floor(Math.random()*active.length)]}
+function doMatch(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='chats';openChat({id:a.id,name:a.name,avatar:a.avatar,ai:true,online:a.online})};adType.value='match';showAdWall.value=true}
+function doVoiceCall(a){currentAd.value=pickRandomAd();pendingAdCallback=()=>{section.value='calls';startVoiceCall(a)};adType.value='call';showAdWall.value=true}
+function testAdWall(){currentAd.value=pickRandomAd();adType.value='call';pendingAdCallback=()=>{alert('Ad completed!')};showAdWall.value=true}
+function trackAdClick(){if(currentAd.value){try{db.collection('admin_ads').doc(currentAd.value.id).update({clicks:firebase.firestore.FieldValue.increment(1)})}catch(e){}}}
+window.testAdWall=testAdWall
+window.showAd=()=>{showAdWall.value=true;adType.value='call';adWatching.value=false;adDone.value=false}
+function startAd(){if(adTimer)clearInterval(adTimer);adWatching.value=true;adDone.value=false;adProgress.value=0;adTimeLeft.value=10
+if(currentAd.value)try{db.collection('admin_ads').doc(currentAd.value.id).update({impressions:firebase.firestore.FieldValue.increment(1)})}catch(e){}
+adTimer=setInterval(()=>{adProgress.value+=10;adTimeLeft.value--;if(adProgress.value>=100){clearInterval(adTimer);adDone.value=true;setTimeout(()=>{showAdWall.value=false;adWatching.value=false;adDone.value=false;currentAd.value=null;if(pendingAdCallback){const cb=pendingAdCallback;pendingAdCallback=null;cb()}},500)}},1000)}
+function closeAdWall(){if(adTimer)clearInterval(adTimer);showAdWall.value=false;adWatching.value=false;adDone.value=false;pendingAdCallback=null}
+onUnmounted(()=>{if(adTimer)clearInterval(adTimer)})
+
+// Chat
+const activeChat=ref(null),chatInput=ref('')
+const chatMessages=ref([{id:1,text:'Hi there! How are you doing? 😊',me:false},{id:2,text:"I'm great! Just exploring SweetDate Voice.",me:true},{id:3,text:"Would you like to try a voice call? Watch a short ad and we can talk! 😊",me:false},{id:4,text:"Sure, the ad-supported system is really fair!",me:true},{id:5,text:"Yes! A quick ad keeps everything free! 💕",me:false}])
+const chatContacts=ref([{id:'c1',name:'Sophia',avatar:'https://i.pravatar.cc/100?img=11',ai:true,online:true,lastMsg:'Hey! How are you? 😊',time:'2m ago',unread:2},{id:'c2',name:'Yuki',avatar:'https://i.pravatar.cc/100?img=12',ai:true,online:true,lastMsg:'I love Japanese culture!',time:'15m ago',unread:0},{id:'c3',name:'Elena',avatar:'https://i.pravatar.cc/100?img=13',ai:true,online:false,lastMsg:'See you later!',time:'1h ago',unread:0},{id:'c4',name:'Luna',avatar:'https://i.pravatar.cc/100?img=14',ai:true,online:true,lastMsg:'Would love to chat more',time:'2h ago',unread:1},{id:'c5',name:'Mia',avatar:'https://i.pravatar.cc/100?img=15',ai:true,online:true,lastMsg:'Good morning!',time:'3h ago',unread:0}])
+function openChat(c){activeChat.value=c;nextTick(scrollChat)}
+function sendMsg(){if(!chatInput.value.trim()||!activeChat.value)return;chatMessages.value.push({id:Date.now(),text:chatInput.value,me:true});chatInput.value='';nextTick(scrollChat);if(activeChat.value.ai)setTimeout(()=>{const replies=['That sounds interesting! 😊','I totally agree!','You are so fun to talk to!','Tell me more! 🤩','Really? Amazing!','Haha you are great 💕'];chatMessages.value.push({id:Date.now()+1,text:replies[Math.floor(Math.random()*replies.length)],me:false});nextTick(scrollChat)},1500)}
+function scrollChat(){const el=document.querySelector('[ref="chatEnd"]');if(el)el.scrollIntoView({behavior:'smooth'})}
+
+// ===== VOICE CALL WITH REAL TTS (SPEECHSYNTHESIS) =====
+const inCall=ref(null),callDuration=ref('00:00'),callMuted=ref(false),callSpeaker=ref(true)
+const callConnecting=ref(false),callRinging=ref(false),callConnected=ref(false),aiSpeaking=ref(false)
+let callTimer=null,speechSynth=null,speechUtterance=null,speechInterval=null
+const callContacts=ref(chatContacts.value.map(c=>({...c,country:(['US','JP','KR','FR','GB'])[Math.floor(Math.random()*5)],language:(['English','Japanese','Korean','French'])[Math.floor(Math.random()*4)],lastCall:c.time!=='3h ago'?c.time:null})))
+
+const aiPhrases=[
+"Hi there! How are you doing today?",
+"I'm so happy we connected! What would you like to talk about?",
+"Tell me about yourself! I'd love to get to know you better.",
+"That sounds really interesting! I totally agree with you.",
+"You know, I love talking about travel and food. What about you?",
+"Haha, you're really fun to talk to! This is great.",
+"I think we have a lot in common. Don't you think so?",
+"Let's talk about our favorite movies sometime!",
+"I really enjoy this conversation. You're such a nice person!",
+"It's so nice to meet someone from a different country!"
+]
+
+let phraseIndex=0
+function speakPhrase(){
+if(!inCall.value||!callConnected.value)return
+aiSpeaking.value=true
+const phrase=aiPhrases[phraseIndex%aiPhrases.length];phraseIndex++
+if(speechSynth&&speechUtterance){
+speechUtterance.text=phrase
+speechSynth.speak(speechUtterance)
+}else{
+speechSynth=window.speechSynthesis
+speechUtterance=new SpeechSynthesisUtterance(phrase)
+speechUtterance.rate=0.9
+speechUtterance.pitch=1.1
+speechUtterance.volume=callMuted.value?0:1
+const voices=speechSynth.getVoices()
+const femVoice=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK Female'))
+if(femVoice)speechUtterance.voice=femVoice
+speechSynth.speak(speechUtterance)
+}
+speechUtterance.onend=()=>{aiSpeaking.value=false}
+}
+
+function startVoiceCall(a){
+if(callTimer)clearInterval(callTimer);if(speechInterval)clearInterval(speechInterval)
+inCall.value={name:a.name,avatar:a.avatar,country:a.country||'US',language:a.language||'English'}
+callDuration.value='00:00';callMuted.value=false;callSpeaker.value=true
+callConnecting.value=true;callRinging.value=false;callConnected.value=false;aiSpeaking.value=false
+phraseIndex=0
+
+// Preload voices
+speechSynth=window.speechSynthesis
+const voices=speechSynth.getVoices()
+speechUtterance=new SpeechSynthesisUtterance("Hello")
+speechUtterance.rate=0.9;speechUtterance.pitch=1.1
+const femVoice=voices.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK Female'))
+if(femVoice)speechUtterance.voice=femVoice
+
+// Simulate connection: connecting -> ringing -> connected
+setTimeout(()=>{callConnecting.value=false;callRinging.value=true},1500)
+setTimeout(()=>{
+callRinging.value=false;callConnected.value=true
+let sec=0;callTimer=setInterval(()=>{sec++;callDuration.value=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')},1000)
+// Start AI speaking - first phrase after 1s, then every 8-12s
+speakPhrase()
+speechInterval=setInterval(speakPhrase,8000+Math.random()*4000)
+},4000)
+}
+
+function endCall(){
+if(callTimer)clearInterval(callTimer);if(speechInterval)clearInterval(speechInterval)
+if(speechSynth)speechSynth.cancel()
+inCall.value=null;callConnecting.value=false;callRinging.value=false;callConnected.value=false
+aiSpeaking.value=false;callDuration.value='00:00';callMuted.value=false
+}
+function toggleMute(){
+callMuted.value=!callMuted.value
+if(speechUtterance)speechUtterance.volume=callMuted.value?0:1
+}
+function toggleSpeaker(){callSpeaker.value=!callSpeaker.value}
+function getRegionName(code){const r=allRegions.find(x=>x.code===code);return r?r.flag+' '+r.name:'🌍 Global'}
+onUnmounted(()=>{if(callTimer)clearInterval(callTimer);if(speechInterval)clearInterval(speechInterval);if(speechSynth)speechSynth.cancel()})
+
+// Dating
+const showDatingForm=ref(false),showDatingTopic=ref(false),datingTopicTitle=ref(''),datingTopicContent=ref('')
+const datingProfiles=ref([{photo:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',title:'Looking for serious relationship',location:'New York, US',interests:['Travel','Cooking','Yoga']},{photo:'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400',title:"Let's explore the world",location:'London, UK',interests:['Hiking','Photography','Music']},{photo:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',title:'Fun-loving & adventurous',location:'Tokyo, JP',interests:['Dancing','Surfing','Art']},{photo:'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',title:'Romantic at heart',location:'Paris, FR',interests:['Wine','Poetry','Travel']},{photo:'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400',title:'Ready for my soulmate',location:'Seoul, KR',interests:['Fitness','Reading','Movies']},{photo:'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400',title:'Life is better together',location:'Sydney, AU',interests:['Cooking','Nature','Pets']}])
+const datingTopics=ref([{title:'Looking for travel partner to Japan',replies:23,views:156,time:'2h ago'},{title:'Coffee date in New York this weekend?',replies:15,views:89,time:'5h ago'},{title:'Serious relationship seekers over 30',replies:42,views:312,time:'1d ago'},{title:'Virtual date ideas for long distance',replies:18,views:134,time:'2d ago'}])
+
+// Forum
+const showForumTopic=ref(false),forumTopicTitle=ref(''),forumTopicContent=ref(''),forumTopicCat=ref('dating-advice'),forumCat=ref('all')
+const forumCats=[{id:'all',name:'All Topics',count:256},{id:'dating-advice',name:'Dating Advice',count:89},{id:'relationships',name:'Relationships',count:67},{id:'international',name:'International',count:45},{id:'first-date',name:'First Date Tips',count:34}]
+const forumPosts=ref([{id:1,title:'Tips for successful international dating',content:'Share your best tips!',likes:45,views:230,pinned:true,date:'2024-01-15'},{id:2,title:'Best first date idea?',content:'Looking for creative first date ideas.',likes:32,views:189,pinned:false,date:'2024-01-14'},{id:3,title:'Long distance success stories',content:'Share your LDR success stories!',likes:78,views:456,pinned:false,date:'2024-01-13'},{id:4,title:'Cultural dating differences',content:'What surprises have you encountered?',likes:56,views:312,pinned:false,date:'2024-01-12'},{id:5,title:'Write a good dating profile',content:'Tips that actually work!',likes:91,views:567,pinned:true,date:'2024-01-10'}])
+
+// Social
+const socialPostText=ref('')
+const socialPosts=ref([{id:1,author:'User A1',content:'Beautiful sunset date tonight! 🌅',image:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600',likes:124,time:'2h ago',showComment:false,commentText:''},{id:2,author:'User B2',content:'Met someone special through SweetDate! 💕',image:'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600',likes:89,time:'5h ago',showComment:false,commentText:''},{id:3,author:'User C3',content:'Exploring Tokyo and meeting new friends 🌏',image:'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600',likes:256,time:'8h ago',showComment:false,commentText:''},{id:4,author:'User D4',content:'Voice chat makes LDR so much easier ❤️',image:null,likes:67,time:'1d ago',showComment:false,commentText:''}])
+function addSocialPost(){if(!socialPostText.value.trim())return;socialPosts.value.unshift({id:Date.now(),author:'Me',content:socialPostText.value,image:null,likes:0,time:'Just now',showComment:false,commentText:''});socialPostText.value=''}
+
+// Premium
+const premiumFeatures=[{icon:'🛡️',title:'Ad-Free Experience',desc:'Enjoy SweetDate without ads'},{icon:'⚡',title:'Priority Matching',desc:'Get matched faster'},{icon:'🔊',title:'HD Voice Quality',desc:'Crystal clear HD voice calls'},{icon:'✨',title:'Unlimited AI Chats',desc:'Chat without limits'},{icon:'💎',title:'Luxury Themes',desc:'Gold & diamond visual themes'},{icon:'🏅',title:'Premium Badge',desc:'Show your premium status'}]
+
+return{user,authLoading,authError,isRegister,loginEmail,loginPass,regName,regEmail,regPass,doLogin,doRegister,logout,
+section,navItems,profile,profileEditing,saveProfile,loadProfile,countries,languages,appLang,setLang,showLangPicker,langNames,t,userRegion,showRegionPicker,allRegions,setRegion,getRegionName,
+allAgents,agentPage,agentCountries,searchTerm,agentFilter,countryFilter,filteredAgents,
+showAdWall,adType,adWatching,adDone,adProgress,adTimeLeft,startAd,doMatch,doVoiceCall,closeAdWall,testAdWall,currentAd,trackAdClick,adsterraDirectLink,
+activeChat,chatInput,chatMessages,chatContacts,openChat,sendMsg,
+inCall,callDuration,callMuted,callSpeaker,callConnecting,callRinging,callConnected,aiSpeaking,toggleMute,toggleSpeaker,startVoiceCall,endCall,callContacts,
+showDatingForm,showDatingTopic,datingTopicTitle,datingTopicContent,datingProfiles,datingTopics,
+showForumTopic,forumTopicTitle,forumTopicContent,forumTopicCat,forumCat,forumCats,forumPosts,
+socialPostText,socialPosts,addSocialPost,premiumFeatures}
+}})
+app.mount('#app')
+</script>
+</body>
+</html>
